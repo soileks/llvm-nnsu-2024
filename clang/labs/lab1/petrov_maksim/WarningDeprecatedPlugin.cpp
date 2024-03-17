@@ -21,11 +21,11 @@ public:
     if ((FuncName.find(DeprecatedKeyword) != std::string::npos)) {
 
       DiagnosticsEngine &Diagnostics = Context->getDiagnostics();
-      unsigned WarningId = Diagnostics.getCustomDiagID(
+      unsigned WarnId = Diagnostics.getCustomDiagID(
           DiagnosticsEngine::Warning,
           "Function '%0' contains 'deprecated' in its name");
 
-      Diagnostics.Report(F->getLocation(), WarningId) << FuncName;
+      Diagnostics.Report(F->getLocation(), WarnId) << FuncName;
     }
     return true;
   }
