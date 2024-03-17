@@ -11,7 +11,7 @@ private:
   ASTContext *Context;
 
 public:
-  explicit WarningDepricatedVisitor(ASTContext *Context) {this->Context = Context;}
+  explicit WarningDepricatedVisitor(ASTContext *Context) : Context(Context) {}
 
   bool VisitFunctionDecl(FunctionDecl *F) {
 
@@ -21,11 +21,11 @@ public:
     if ((FuncName.find(DeprecatedKeyword) != std::string::npos)) {
 
       DiagnosticsEngine &Diagnostics = Context->getDiagnostics();
-      unsigned warningID = Diagnostics.getCustomDiagID(
+      unsigned WarningId = Diagnostics.getCustomDiagID(
           DiagnosticsEngine::Warning,
           "Function '%0' contains 'deprecated' in its name");
 
-      Diagnostics.Report(F->getLocation(), warningID) << FuncName;
+      Diagnostics.Report(F->getLocation(), WarningId) << FuncName;
     }
     return true;
   }
@@ -54,8 +54,18 @@ public:
   }
 
 protected:
-  bool ParseArgs(const CompilerInstance &Compiler,
-                 const std::vector<std::string> &args) override {
+  bool ParseArgs(const CompilerInstance &CI,
+                 const std::vector<std::string> &Args) override {
+    for (unsigned i = 0, e = Args.size(); i != e; ++i) {
+      if (Args[i] == "help") {
+        llvm::errs() << "#Clang Plugin Help : WarningDeprecatedPlugin\n\n";
+        llvm::errs() << "##Description\n";
+        llvm::errs() << "This plugin adds a warning if there is a function "
+                        "whose name contains 'deprecated'\n";
+        llvm::errs() << "##Version\n";
+        llvm::errs() << "Version 1.1\n\n";
+      }
+    }
     return true;
   }
 };
