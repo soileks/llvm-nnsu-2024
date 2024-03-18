@@ -8,7 +8,7 @@ void DeprecatedFoo2();
 
 struct St {
 // CHECK: warning: Function 'deprecatedFunc3' contains 'deprecated' in its name
-	void deprecatedFunc3() {}
+  void deprecatedFunc3() {}
 };
 
 // RUN: %clang_cc1 -load %llvmshlibdir/WarningDeprecatedPlugin%pluginext -plugin WarningDeprecatedPlugin %s -plugin-arg-WarningDeprecatedPlugin help 2>&1 | FileCheck %s --check-prefix=HELP
