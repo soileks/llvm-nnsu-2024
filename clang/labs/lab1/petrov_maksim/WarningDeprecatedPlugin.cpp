@@ -56,7 +56,7 @@ public:
 protected:
   bool ParseArgs(const CompilerInstance &CI,
                  const std::vector<std::string> &Args) override {
-    for (unsigned i = 0, e = Args.size(); i != e; ++i) {
+    for (unsigned I = 0, E = Args.size(); I != E; ++I) {
       if (Args[i] == "help") {
         llvm::errs() << "#Clang Plugin Help : WarningDeprecatedPlugin\n\n";
         llvm::errs() << "##Description\n";
