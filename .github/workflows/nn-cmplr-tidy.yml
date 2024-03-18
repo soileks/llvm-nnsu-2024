@@ -14,8 +14,8 @@ jobs:
         sudo apt-get install -y clang-format
     - name: Run clang-format
       run: |
-        git-clang-format --diff `git merge-base ${GITHUB_SHA} origin/${GITHUB_BASE_REF}` ${GITHUB_SHA} 2>&1 | grep diff | tee log.txt
-        exit `wc -l log.txt | awk '{print $1}'`
+        git-clang-format --diff `git merge-base ${GITHUB_SHA} origin/${GITHUB_BASE_REF}` ${GITHUB_SHA} 2>&1 | tee log.txt
+        exit `grep -c diff log.txt`
   clang-tidy:
     runs-on: ubuntu-latest
     steps:

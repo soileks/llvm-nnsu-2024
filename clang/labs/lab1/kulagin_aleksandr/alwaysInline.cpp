@@ -1,0 +1,71 @@
+#include "clang/AST/AST.h"
+#include "clang/AST/ASTConsumer.h"
+#include "clang/AST/Decl.h"
+#include "clang/AST/DeclGroup.h"
+#include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/AST/Stmt.h"
+#include "clang/Basic/SourceLocation.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/FrontendPluginRegistry.h"
+#include "llvm/ADT/StringRef.h"
+
+namespace {
+
+class AlwaysInlineConsumer : public clang::ASTConsumer {
+public:
+  bool HandleTopLevelDecl(clang::DeclGroupRef DeclGroup) override {
+    for (clang::Decl *Decl : DeclGroup) {
+      if (clang::isa<clang::FunctionDecl>(Decl)) {
+        if (Decl->getAttr<clang::AlwaysInlineAttr>()) {
+          continue;
+        }
+        clang::Stmt *Body = Decl->getBody();
+        if (Body != nullptr) {
+          bool CondFound = false;
+          for (clang::Stmt *St : Body->children()) {
+            if (clang::isa<clang::IfStmt>(St) ||
+                clang::isa<clang::WhileStmt>(St) ||
+                clang::isa<clang::ForStmt>(St) ||
+                clang::isa<clang::DoStmt>(St) ||
+                clang::isa<clang::SwitchStmt>(St)) {
+              CondFound = true;
+              break;
+            }
+          }
+          if (!CondFound) {
+            // TODO: how to put correct location??
+            clang::SourceLocation Location(Decl->getSourceRange().getBegin());
+            clang::SourceRange Range(Location);
+            Decl->addAttr(
+                clang::AlwaysInlineAttr::Create(Decl->getASTContext(), Range));
+          }
+        }
+      }
+    }
+    return true;
+  }
+};
+
+class AlwaysInlinePlugin : public clang::PluginASTAction {
+protected:
+  std::unique_ptr<clang::ASTConsumer>
+  CreateASTConsumer(clang::CompilerInstance &Compiler,
+                    llvm::StringRef InFile) override {
+    return std::make_unique<AlwaysInlineConsumer>();
+  }
+  bool ParseArgs(const clang::CompilerInstance &Compiler,
+                 const std::vector<std::string> &Args) override {
+    for (const std::string &Arg : Args) {
+      if (Arg == "--help") {
+        llvm::outs() << "adds always_inline if no conditions inside body\n";
+        return false;
+      }
+    }
+    return true;
+  }
+};
+
+} // namespace
+
+static clang::FrontendPluginRegistry::Add<AlwaysInlinePlugin>
+    X("always-inline", "adds always_inline if no conditions inside body");
