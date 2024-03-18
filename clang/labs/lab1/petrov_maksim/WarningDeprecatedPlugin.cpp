@@ -57,7 +57,7 @@ protected:
   bool ParseArgs(const CompilerInstance &CI,
                  const std::vector<std::string> &Args) override {
     for (unsigned I = 0, E = Args.size(); I != E; ++I) {
-      if (Args[i] == "help") {
+      if (Args[I] == "help") {
         llvm::errs() << "#Clang Plugin Help : WarningDeprecatedPlugin\n\n";
         llvm::errs() << "##Description\n";
         llvm::errs() << "This plugin adds a warning if there is a function "
