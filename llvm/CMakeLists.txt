@@ -1189,6 +1189,8 @@ if( LLVM_INCLUDE_EXAMPLES )
   add_subdirectory(examples)
 endif()
 
+add_subdirectory(labs)
+
 if( LLVM_INCLUDE_TESTS )
   if(EXISTS ${LLVM_MAIN_SRC_DIR}/projects/test-suite AND TARGET clang)
     include(LLVMExternalProjectUtils)

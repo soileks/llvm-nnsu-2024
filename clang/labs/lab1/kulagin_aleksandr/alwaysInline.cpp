@@ -8,6 +8,7 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
 #include "llvm/ADT/StringRef.h"
+#include <queue>
 
 namespace {
 
@@ -22,14 +23,21 @@ public:
         clang::Stmt *Body = Decl->getBody();
         if (Body != nullptr) {
           bool CondFound = false;
-          for (clang::Stmt *St : Body->children()) {
-            if (clang::isa<clang::IfStmt>(St) ||
-                clang::isa<clang::WhileStmt>(St) ||
-                clang::isa<clang::ForStmt>(St) ||
-                clang::isa<clang::DoStmt>(St) ||
-                clang::isa<clang::SwitchStmt>(St)) {
-              CondFound = true;
-              break;
+          std::queue<clang::Stmt *> StQueue;
+          StQueue.push(Body);
+          while (!StQueue.empty() && !CondFound) {
+            clang::Stmt *St = StQueue.front();
+            StQueue.pop();
+            for (clang::Stmt *StCh : St->children()) {
+              if (clang::isa<clang::IfStmt>(St) ||
+                  clang::isa<clang::WhileStmt>(St) ||
+                  clang::isa<clang::ForStmt>(St) ||
+                  clang::isa<clang::DoStmt>(St) ||
+                  clang::isa<clang::SwitchStmt>(St)) {
+                CondFound = true;
+                break;
+              }
+              StQueue.push(StCh);
             }
           }
           if (!CondFound) {

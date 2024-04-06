@@ -104,6 +104,7 @@ jobs:
                 -DLLVM_ENABLE_ASSERTIONS=ON \
                 -DLLDB_INCLUDE_TESTS=OFF \
                 -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+                -DLLVM_TARGETS_TO_BUILD=X86 \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
                 ${{ inputs.extra_cmake_args }}
           ninja -C "$builddir" all

@@ -4,7 +4,7 @@ if(WIN32 OR CYGWIN)
   set(LLVM_LINK_COMPONENTS
     Support
   )
-  clang_target_link_libraries(DeprecatedWarningPlugin PRIVATE
+  clang_target_link_libraries(RenamedIdPlugin PRIVATE
     clangAST
     clangBasic
     clangFrontend
