@@ -16,14 +16,17 @@
 
 namespace {
 
-void InsertLoopStart(llvm::FunctionCallee LoopStartFunc, llvm::Loop *L, llvm::IRBuilder<> &Builder) {
+void InsertLoopStart(llvm::FunctionCallee LoopStartFunc, llvm::Loop *L,
+                     llvm::IRBuilder<> &Builder) {
   auto *Preheader = L->getLoopPreheader();
-  if (!Preheader) return;
+  if (!Preheader)
+    return;
   Builder.SetInsertPoint(Preheader->getTerminator());
   Builder.CreateCall(LoopStartFunc);
 }
 
-void InsertLoopEnd(llvm::FunctionCallee LoopEndFunc, llvm::Loop *L, llvm::IRBuilder<> &Builder) {
+void InsertLoopEnd(llvm::FunctionCallee LoopEndFunc, llvm::Loop *L,
+                   llvm::IRBuilder<> &Builder) {
   llvm::SmallVector<llvm::BasicBlock *, 8> ExitBlocks;
   L->getExitBlocks(ExitBlocks);
 
@@ -35,7 +38,8 @@ void InsertLoopEnd(llvm::FunctionCallee LoopEndFunc, llvm::Loop *L, llvm::IRBuil
   }
 }
 
-void ProcessLoop(llvm::Loop *L, llvm::FunctionCallee LoopStartFunc, llvm::FunctionCallee LoopEndFunc, llvm::IRBuilder<> &Builder) {
+void ProcessLoop(llvm::Loop *L, llvm::FunctionCallee LoopStartFunc,
+                 llvm::FunctionCallee LoopEndFunc, llvm::IRBuilder<> &Builder) {
   InsertLoopStart(LoopStartFunc, L, Builder);
   InsertLoopEnd(LoopEndFunc, L, Builder);
   for (auto *SubLoop : L->getSubLoops()) {
@@ -48,9 +52,11 @@ struct PetrovWrapLoopPlugin : llvm::PassInfoMixin<PetrovWrapLoopPlugin> {
                               llvm::FunctionAnalysisManager &FAM) {
     auto *M = F.getParent();
     auto *Ctx = &F.getContext();
-    auto LoopStartFunc = M->getOrInsertFunction("loop_start",
+    auto LoopStartFunc = M->getOrInsertFunction(
+        "loop_start",
         llvm::FunctionType::get(llvm::Type::getVoidTy(*Ctx), false));
-    auto LoopEndFunc = M->getOrInsertFunction("loop_end",
+    auto LoopEndFunc = M->getOrInsertFunction(
+        "loop_end",
         llvm::FunctionType::get(llvm::Type::getVoidTy(*Ctx), false));
 
     llvm::IRBuilder<> Builder(*Ctx);
@@ -62,10 +68,10 @@ struct PetrovWrapLoopPlugin : llvm::PassInfoMixin<PetrovWrapLoopPlugin> {
   }
 };
 
-}
+} // namespace
 llvm::PassPluginLibraryInfo getPetrovWrapLoopPluginPluginInfo() {
-  return {LLVM_PLUGIN_API_VERSION, "PetrovWrapLoopPlugin",
-          LLVM_VERSION_STRING, [](llvm::PassBuilder &PB) {
+  return {LLVM_PLUGIN_API_VERSION, "PetrovWrapLoopPlugin", LLVM_VERSION_STRING,
+          [](llvm::PassBuilder &PB) {
             PB.registerPipelineParsingCallback(
                 [](llvm::StringRef Name, llvm::FunctionPassManager &PM,
                    llvm::ArrayRef<llvm::PassBuilder::PipelineElement>) {
