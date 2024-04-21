@@ -27,11 +27,9 @@ bool X86PetrovMulAddPass::runOnMachineFunction(llvm::MachineFunction &MF) {
   bool Changed = false;
 
   for (auto &MBB : MF) {
-    llvm::MachineBasicBlock::iterator PrevInstr;
     for (auto I = MBB.begin(); I != MBB.end();) {
       if (I->getOpcode() == llvm::X86::MULPDrr) {
         auto MulInstr = I;
-        PrevInstr = I;
         ++I;
         while (I != MBB.end()) {
           if (I->getOpcode() == llvm::X86::ADDPDrr) {
@@ -61,11 +59,11 @@ bool X86PetrovMulAddPass::runOnMachineFunction(llvm::MachineFunction &MF) {
   return Changed;
 }
 
-}
+} // namespace
 
 INITIALIZE_PASS(X86PetrovMulAddPass, "x86-petrov-muladd", X86_MULADD_PASS_NAME,
                 false, false)
 
 namespace llvm {
 FunctionPass *createX86PetrovMulAddPass() { return new X86PetrovMulAddPass(); }
-}
+} // namespace llvm
