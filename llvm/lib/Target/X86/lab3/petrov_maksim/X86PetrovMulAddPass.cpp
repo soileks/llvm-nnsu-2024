@@ -68,6 +68,5 @@ bool X86PetrovMulAddPass::runOnMachineFunction(llvm::MachineFunction &MF) {
 
 } // namespace
 
-static RegisterPass<X86PetrovMulAddPass>
-    X("x86-petrov-muladd", X86_MULADD_PASS_NAME,
-      false, false);
+static RegisterPass<X86PetrovMulAddPass> X("x86-petrov-muladd",
+                                           X86_MULADD_PASS_NAME, false, false);
