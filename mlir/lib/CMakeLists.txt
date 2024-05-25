@@ -19,3 +19,5 @@ add_subdirectory(Target)
 add_subdirectory(Tools)
 add_subdirectory(Transforms)
 add_subdirectory(ExecutionEngine)
+
+set(MLIR_TEST_DEPENDS ${MLIR_TEST_DEPENDS} PARENT_SCOPE)

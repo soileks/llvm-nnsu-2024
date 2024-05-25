@@ -86,7 +86,7 @@ configure_lit_site_cfg(
   ${CMAKE_CURRENT_SOURCE_DIR}/Unit/lit.cfg.py
   )
 
-set(MLIR_TEST_DEPENDS
+set(MLIR_TEST_DEPENDS ${MLIR_TEST_DEPENDS}
   FileCheck count not split-file
   mlir-capi-ir-test
   mlir-capi-llvm-test
